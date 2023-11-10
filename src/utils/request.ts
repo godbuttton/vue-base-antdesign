@@ -2,8 +2,8 @@ import axios,{ type AxiosRequestConfig } from 'axios'
 import { message, notification } from "ant-design-vue"
 import { getToken } from '@/utils/auth'
 import { tansParams, blobValidate,codeMap } from '@/utils/response'
-import { saveAs } from 'file-saver'
-import useUserStore from '@/store/modules/user'
+import { saveAs as any } from 'file-saver'
+import  useUserStore  from '@/stores/module/user'
 import qs from 'qs'
 
 export const reLogin = { show: false };
@@ -16,7 +16,7 @@ const service = axios.create({
 })
 
 message.config({
-    duration: 1,
+    duration: 2,
     maxCount: 1,
 });
 
@@ -60,7 +60,7 @@ service.interceptors.response.use(res => {
     // 未设置状态码则默认成功状态
     const code = res.data.code || 200;
     // 获取错误信息
-    const msg = errorCode[code] || res.data.msg || errorCode['default']
+    const msg = codeMap[code] || res.data.msg || codeMap['default']
     // 二进制数据则直接返回
     if (res.request.responseType ===  'blob' || res.request.responseType ===  'arraybuffer') {
       return res.data
@@ -79,13 +79,13 @@ service.interceptors.response.use(res => {
     }
       return Promise.reject('无效的会话，或者会话已过期，请重新登录。')
     } else if (code === 500) {
-      message({ message: msg, type: 'error' })
+      message.error(msg)
       return Promise.reject(new Error(msg))
     } else if (code === 601) {
-      message({ message: msg, type: 'warning' })
+      message.warning(msg)
       return Promise.reject(new Error(msg))
     } else if (code !== 200) {
-      ElNotification.error({ title: msg })
+      message.error(msg)
       return Promise.reject('error')
     } else {
       return  Promise.resolve(res.data)
@@ -135,3 +135,4 @@ export function download(url, params, filename, config) {
     })
   }
   
+  export default service

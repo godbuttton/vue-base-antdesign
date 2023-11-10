@@ -6,7 +6,12 @@ export const codeMap={
 }
 
 // 下载方法
-export function blobValidate(data) {
+export function blobValidate(data: {
+    type:string
+}) {
     return data.type !== 'application/json'
 }
-  
+
+export function tansParams(data:{}) {
+    return data
+}
